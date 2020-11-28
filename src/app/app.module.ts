@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 
 import * as echarts from 'echarts';
 import 'echarts/theme/macarons.js';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import 'echarts/theme/macarons.js';
   imports: [
     BrowserModule,
     NgxEchartsModule.forRoot({ echarts }),
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
