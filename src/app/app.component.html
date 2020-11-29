@@ -1,14 +1,3 @@
-<div style="width: 2504px;height: 3531px;border: 1px solid; display: block;"> 
-  <div echarts [options]="optionsJanvier" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsFevrier" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsMars" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsAvril" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsMai" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsJuin" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsJuillet" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsAout" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsSeptembre" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsOctobre" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsNovembre" theme="macarons" class="chart"></div>
-  <div echarts [options]="optionsDecembre" theme="macarons" class="chart"></div>
+<div *ngFor="let month of months" > 
+  <div echarts [options]="month.options" theme="macarons" class="chart"></div>
 </div>
