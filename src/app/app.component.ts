@@ -3,8 +3,30 @@ import {HttpClient} from '@angular/common/http';
 import {MockServerService} from './mock-server.service';
 
 import janvier from '../assets/hauteurs/janvier.json';
+import fevrier from '../assets/hauteurs/fevrier.json';
+import mars from '../assets/hauteurs/mars.json';
+import avril from '../assets/hauteurs/avril.json';
+import mai from '../assets/hauteurs/mai.json';
+import juin from '../assets/hauteurs/juin.json';
+import juillet from '../assets/hauteurs/juillet.json';
+import aout from '../assets/hauteurs/aout.json';
+import septembre from '../assets/hauteurs/septembre.json';
+import octobre from '../assets/hauteurs/octobre.json';
+import novembre from '../assets/hauteurs/novembre.json';
+import decembre from '../assets/hauteurs/decembre.json';
 
 import coeffjanvier from '../assets/coeff/coeffJanvier.json';
+import coefffevrier from '../assets/coeff/coeffFevrier.json';
+import coeffmars from '../assets/coeff/coeffMars.json';
+import coeffavril from '../assets/coeff/coeffAvril.json';
+import coeffmai from '../assets/coeff/coeffMai.json';
+import coeffjuin from '../assets/coeff/coeffJuin.json';
+import coeffjuillet from '../assets/coeff/coeffJuillet.json';
+import coeffaout from '../assets/coeff/coeffAout.json';
+import coeffseptembre from '../assets/coeff/coeffSeptembre.json';
+import coeffoctobre from '../assets/coeff/coeffOctobre.json';
+import coeffnovembre from '../assets/coeff/coeffNovembre.json';
+import coeffdecembre from '../assets/coeff/coeffDecembre.json';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +43,7 @@ export class AppComponent implements OnInit {
     yAxis: {
       type: 'value',
       max: 6,
-      min: 0
+      min: 0,
     },
     series: [
       {
@@ -71,10 +93,11 @@ export class AppComponent implements OnInit {
           formatter: null
         },
         markPoint: {
-          symbol: 'rect',
-          symbolSize: 35,
+          symbol: 'circle',
+          symbolSize: 1,
           label: {
-            color: '#fff',
+            color: '#5c7aff',
+            //rotate: 45,
             opacity: 1,
             'font-family': 'Roboto Mono'
           },
@@ -114,17 +137,17 @@ export class AppComponent implements OnInit {
     this.optionsDecembre = AppComponent.deepCopy(this.options);
     this.months = [
       {month: 'January', days: 31, monthDatas: janvier, options: this.optionsJanvier, coeffDatas: coeffjanvier},
-      /* {month: 'February', days: 28, monthDatas: fevrier, options: this.optionsFevrier, coeffDatas: coefffevrier},
-       {month: 'March', days: 31, monthDatas: mars, options: this.optionsMars, coeffDatas: coeffmars},
-       {month: 'April', days: 30, monthDatas: avril, options: this.optionsAvril, coeffDatas: coeffavril},
-       {month: 'May', days: 31, monthDatas: mai, options: this.optionsMai, coeffDatas: coeffmai},
-       {month: 'June', days: 30, monthDatas: juin, options: this.optionsJuin, coeffDatas: coeffjuin},
-       {month: 'July', days: 31, monthDatas: juillet, options: this.optionsJuillet, coeffDatas: coeffjuillet},
-       {month: 'August', days: 31, monthDatas: aout, options: this.optionsAout, coeffDatas: coeffaout},
-       {month: 'September', days: 30, monthDatas: septembre, options: this.optionsSeptembre, coeffDatas: coeffseptembre},
-       {month: 'October', days: 31, monthDatas: octobre, options: this.optionsOctobre, coeffDatas: coeffoctobre},
-       {month: 'November', days: 30, monthDatas: novembre, options: this.optionsNovembre, coeffDatas: coeffnovembre},
-       {month: 'December', days: 31, monthDatas: decembre, options: this.optionsDecembre, coeffDatas: coeffdecembre},*/
+      {month: 'February', days: 28, monthDatas: fevrier, options: this.optionsFevrier, coeffDatas: coefffevrier},
+      {month: 'March', days: 31, monthDatas: mars, options: this.optionsMars, coeffDatas: coeffmars},
+      {month: 'April', days: 30, monthDatas: avril, options: this.optionsAvril, coeffDatas: coeffavril},
+      {month: 'May', days: 31, monthDatas: mai, options: this.optionsMai, coeffDatas: coeffmai},
+      {month: 'June', days: 30, monthDatas: juin, options: this.optionsJuin, coeffDatas: coeffjuin},
+      {month: 'July', days: 31, monthDatas: juillet, options: this.optionsJuillet, coeffDatas: coeffjuillet},
+      {month: 'August', days: 31, monthDatas: aout, options: this.optionsAout, coeffDatas: coeffaout},
+      {month: 'September', days: 30, monthDatas: septembre, options: this.optionsSeptembre, coeffDatas: coeffseptembre},
+      {month: 'October', days: 31, monthDatas: octobre, options: this.optionsOctobre, coeffDatas: coeffoctobre},
+      {month: 'November', days: 30, monthDatas: novembre, options: this.optionsNovembre, coeffDatas: coeffnovembre},
+      {month: 'December', days: 31, monthDatas: decembre, options: this.optionsDecembre, coeffDatas: coeffdecembre},
     ];
   }
 
@@ -185,14 +208,17 @@ export class AppComponent implements OnInit {
           const date = '2021-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + (d + 1)).slice(-2);
           console.log('Date', date);
           const coefficients: number[] = [];
-          let j = 0;
-          const heuresPmBm: string[] = [];
+          const heuresPm: string[] = [];
+          const heuresBm: string[] = [];
           for (let i = 0; i < NB_COEFF; i++) {
             const coeffInfos = month.coeffDatas[d][date][i];
             if (coeffInfos[0] === 'tide.high') {
               const coeff = coeffInfos[OFFSET_COEFF];
               coefficients.push(coeff);
-              heuresPmBm.push(coeffInfos[OFFSET_HEURE_PM_BM]);
+              heuresPm.push(coeffInfos[OFFSET_HEURE_PM_BM]);
+            }
+            if (coeffInfos[0] === 'tide.low') {
+              heuresBm.push(coeffInfos[OFFSET_HEURE_PM_BM]);
             }
           }
           console.log(coefficients);
@@ -201,13 +227,14 @@ export class AppComponent implements OnInit {
             const hauteurVal = hauteurInfoHeure[OFFSET_HAUTEUR] * 1.0;
             const heureVal = hauteurInfoHeure[OFFSET_HEURE];
             const currentDate = Date.parse(date.concat(' ').concat(heureVal).concat(':00 GMT'));
-            const heurePMDate = Date.parse(date.concat(' ').concat(heuresPmBm.values().next().value).concat(':00 GMT'));
+            const heurePMDate = Date.parse(date.concat(' ').concat(heuresPm.values().next().value).concat(':00 GMT'));
+            const heureBMDate = Date.parse(date.concat(' ').concat(heuresBm.values().next().value).concat(':00 GMT'));
             // Axe X
             const xIndex = heure + d * this.NB_VALUES;
             month.options.xAxis.data.push(xIndex.toString());
             // Coefficients de marée
             if (currentDate > heurePMDate && showCoeff) {
-              const heurePM = heuresPmBm.shift();
+              const heurePM = heuresPm.shift();
               const coeff = coefficients.shift();
               console.log('local max', currentDate, heurePMDate, coeff, xIndex);
               month.options.series[COEFF_SERIE].data.push(-1);
@@ -215,27 +242,45 @@ export class AppComponent implements OnInit {
                 name: 'Coefficient',
                 value: coeff.toString(),
                 xAxis: xIndex,
-                yAxis: hauteurVal + 0.4
+                yAxis: hauteurVal + 0.7
               });
+              /*const heureBM = heuresBm.shift();
+              if (heureBM !== undefined) {
+                month.options.series[HEURE_SERIE].data.push(-1);
+                month.options.series[HEURE_SERIE].markPoint.data.push({
+                  name: 'Coefficient',
+                  value: heureBM.toString(),
+                  xAxis: xIndex,
+                  yAxis: 6-hauteurVal-1
+                });
+              }*/
               month.options.series[HEURE_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: heurePM,
                 xAxis: xIndex,
-                yAxis: 6
+                yAxis: hauteurVal + 0.2
               });
               showCoeff = false;
-            } else /*if (prevHauteurVal > hauteurVal && hauteurVal < nextHauteurVal) {
-              descend = hauteurVal < prevHauteurVal;
-              // on ignore les coeff en basse mer
-              // coefficients.pop();
-              // récupération de l'heure
-            } else */{
+            } else {
 
-              if (!(Date.parse(currentDate) > Date.parse(heurePMDate))) {
+              if (!(currentDate > heurePMDate)) {
                 showCoeff = true;
               }
               month.options.series[COEFF_SERIE].data.push(-1);
 
+            }
+            if (currentDate > heureBMDate) {
+              const heureBM = heuresBm.shift();
+              month.options.series[HEURE_SERIE].data.push(-1);
+              month.options.series[HEURE_SERIE].markPoint.data.push({
+                name: 'Coefficient',
+                value: heureBM.toString(),
+                xAxis: xIndex,
+                yAxis: hauteurVal -0.3
+              });
+              // on ignore les coeff en basse mer
+              // coefficients.pop();
+              // récupération de l'heure
             }
 
             // Hauteur de marée
@@ -294,9 +339,7 @@ interface Options {
         formatter: any
       },
       markPoint: {
-        data: [
-          { name: 'Coefficient', value: -2, xAxis: 1, yAxis: -1.5 }
-        ]
+        data: []
       },
     },
     {
@@ -310,9 +353,7 @@ interface Options {
         formatter: any
       },
       markPoint: {
-        data: [
-          { name: 'Coefficient', value: -2, xAxis: 1, yAxis: -1.5 }
-        ]
+        data: []
       },
     }
   ];
