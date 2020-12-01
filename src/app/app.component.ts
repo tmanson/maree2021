@@ -54,13 +54,16 @@ export class AppComponent implements OnInit {
       data: [],
       show: true,
       axisLabel: {show: true, interval: 288, rotate: 0, padding: [0, 0, 0, 50]},
+      axisLine: {lineStyle: {color:'#ff7b5c'}}
     },
     yAxis: {
       type: 'value',
-      max: 7,
-      min: 0,
+      max: 8,
+      min: -0.7,
       show: true,
-      position: 'right'
+      position: 'right',
+	  axisLabel: {show: true,},
+      axisLine: {lineStyle: {color:'#ff7b5c'}}
     },
     series: [
       {
@@ -123,18 +126,18 @@ export class AppComponent implements OnInit {
       }
     ],
   };
-  optionsJanvier: Options = null;
-  optionsFevrier: Options = null;
-  optionsMars: Options = null;
-  optionsAvril: Options = null;
-  optionsMai: Options = null;
-  optionsJuin: Options = null;
-  optionsJuillet: Options = null;
-  optionsAout: Options = null;
-  optionsSeptembre: Options = null;
-  optionsOctobre: Options = null;
-  optionsNovembre: Options = null;
-  optionsDecembre: Options = null;
+  optionsJanvier = null;
+  optionsFevrier = null;
+  optionsMars = null;
+  optionsAvril = null;
+  optionsMai = null;
+  optionsJuin = null;
+  optionsJuillet = null;
+  optionsAout = null;
+  optionsSeptembre = null;
+  optionsOctobre = null;
+  optionsNovembre = null;
+  optionsDecembre = null;
 
   public months: Array<MonthObj> = null;
   NB_VALUES = 288;
@@ -207,12 +210,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    const OFFSET_Y = 1;
     const OFFSET_HEURE = 0;
     const OFFSET_HAUTEUR = 1;
     const OFFSET_COEFF = 3;
     const OFFSET_HAUTEUR_PM_BM = 2;
     const OFFSET_HEURE_PM_BM = 1;
-    let m = 0;
+    let m = 0; 
     const NB_COEFF = 4;
     const HAUTEUR_SERIE = 0;
     const COEFF_SERIE = 1;
@@ -222,6 +226,7 @@ export class AppComponent implements OnInit {
         console.log('Month', month, m);
         let showCoeff = true;
         let forceShowCoeff = false;
+		let prevCoeff = undefined;
         for (let d = 0; d < month.days; d++) {
           console.log('Day', d);
           const date = '2021-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + (d + 1)).slice(-2);
@@ -242,8 +247,11 @@ export class AppComponent implements OnInit {
           }
           console.log(coefficients);
           for (let heure = 0; heure < this.NB_VALUES; heure++) {
+            if ( month.monthDatas[d][date][heure] === undefined) {
+              continue;
+            }
             const hauteurInfoHeure = month.monthDatas[d][date][heure];
-            const hauteurVal = (hauteurInfoHeure[OFFSET_HAUTEUR] + 0.5) * 1.0;
+            const hauteurVal = (hauteurInfoHeure[OFFSET_HAUTEUR] + OFFSET_Y) * 1.0;
             const heureVal = hauteurInfoHeure[OFFSET_HEURE];
             const currentDate = Date.parse(date.concat(' ').concat(heureVal).concat(':00 GMT'));
             const heurePMDate = Date.parse(date.concat(' ').concat(heuresPm.values().next().value).concat(':00 GMT'));
@@ -251,30 +259,37 @@ export class AppComponent implements OnInit {
             // Axe X
             const xIndex = heure + d * this.NB_VALUES;
             xAxisLAbel[xIndex] = date;
-            month.options.xAxis.data.push(xIndex.toString());
-            if(heure === this.NB_VALUES - 1 && heuresPm.length > 0){
+            month.options.xAxis.data.push(xIndex);
+            if (heure === this.NB_VALUES - 1 && heuresPm.length > 0) {
               forceShowCoeff = true;
             }
             // Coefficients de marée
             if ((currentDate > heurePMDate && showCoeff) || forceShowCoeff) {
               const heurePM = heuresPm.shift();
               const coeff = coefficients.shift();
+			  // TODO calculer la hauteur avec les hauteur PM/BM pas avec les coeff
+			  const currentIndex = coefficients.indexOf(coeff);
+const nextIndex = (currentIndex + 1) % coefficients.length;
+			  const nextCoeff = coefficients[nextIndex];
+			  const h = (((nextCoeff===undefined)?hauteurVal:nextCoeff) + ((prevCoeff===undefined)?hauteurVal:prevCoeff))/2;
+			  console.log(h, prevCoeff, coeff, nextCoeff);
               console.log('local max', currentDate, heurePMDate, coeff, xIndex);
               month.options.series[COEFF_SERIE].data.push(-1);
               month.options.series[COEFF_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: coeff.toString(),
                 xAxis: xIndex,
-                yAxis: hauteurVal + 1.2
+                yAxis: h + 1.7
               });
               month.options.series[HEURE_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: heurePM,
                 xAxis: xIndex,
-                yAxis: hauteurVal + 0.3
+                yAxis: hauteurVal + 0.8
               });
               showCoeff = false;
               forceShowCoeff = false;
+			  prevCoeff = coeff;
             } else {
 
               if (!(currentDate > heurePMDate)) {
@@ -290,7 +305,7 @@ export class AppComponent implements OnInit {
                 name: 'Coefficient',
                 value: heureBM.toString(),
                 xAxis: xIndex,
-                yAxis: hauteurVal - 0.3
+                yAxis: hauteurVal - 0.8
               });
               // on ignore les coeff en basse mer
               // coefficients.pop();
@@ -304,10 +319,10 @@ export class AppComponent implements OnInit {
         month.options.xAxis.axisLabel.formatter = function (value, index) {
           return xAxisLAbel[index].substr(xAxisLAbel[index].length - 2);
         };
-        for (let i = 0; i<15; i++){
+        for (let i = 0; i < 15; i++) {
           console.log('ad')
           month.options.series[HAUTEUR_SERIE].data.push(null);
-          month.options.xAxis.data.push(month.options.xAxis.data.length+1);
+          month.options.xAxis.data.push(month.options.xAxis.data.length + 1);
         }
         m++;
       }
@@ -326,7 +341,8 @@ interface MonthObj {
 interface Options {
   xAxis: {
     type: string,
-    data: Array<string>,
+    data: Array<number>,
+
   };
   yAxis: {
     type: string,
