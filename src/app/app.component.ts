@@ -237,7 +237,7 @@ export class AppComponent implements OnInit {
           for (let i = 0; i < NB_COEFF; i++) {
             const coeffInfos = month.coeffDatas[d][date][i];
             if (coeffInfos[0] === 'tide.high') {
-              const coeff = coeffInfos[OFFSET_COEFF];
+              const coeff = coeffInfos;
               coefficients.push(coeff);
               heuresPm.push(coeffInfos[OFFSET_HEURE_PM_BM]);
             }
@@ -271,13 +271,13 @@ export class AppComponent implements OnInit {
 			  const currentIndex = coefficients.indexOf(coeff);
 const nextIndex = (currentIndex + 1) % coefficients.length;
 			  const nextCoeff = coefficients[nextIndex];
-			  const h = (((nextCoeff===undefined)?hauteurVal:nextCoeff) + ((prevCoeff===undefined)?hauteurVal:prevCoeff))/2;
-			  console.log(h, prevCoeff, coeff, nextCoeff);
-              console.log('local max', currentDate, heurePMDate, coeff, xIndex);
+			  const h = (((nextCoeff===undefined)?hauteurVal:nextCoeff[OFFSET_HAUTEUR_PM_BM])*1.0 + ((prevCoeff===undefined)?hauteurVal:prevCoeff[OFFSET_HAUTEUR_PM_BM])*1.0)*1.0/2;
+			  console.log(h,hauteurVal,  (prevCoeff===undefined)?hauteurVal:prevCoeff[OFFSET_HAUTEUR_PM_BM], coeff[OFFSET_HAUTEUR_PM_BM], (nextCoeff===undefined)?hauteurVal:nextCoeff[OFFSET_HAUTEUR_PM_BM]);
+              console.log('local max', currentDate, heurePMDate, coeff[OFFSET_COEFF], xIndex);
               month.options.series[COEFF_SERIE].data.push(-1);
               month.options.series[COEFF_SERIE].markPoint.data.push({
                 name: 'Coefficient',
-                value: coeff.toString(),
+                value: coeff[OFFSET_COEFF].toString(),
                 xAxis: xIndex,
                 yAxis: h + 1.7
               });
