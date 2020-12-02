@@ -271,8 +271,14 @@ export class AppComponent implements OnInit {
 			  const currentIndex = coefficients.indexOf(coeff);
 const nextIndex = (currentIndex + 1) % coefficients.length;
 			  const nextCoeff = coefficients[nextIndex];
-			  const h = (((nextCoeff===undefined)?hauteurVal:nextCoeff[OFFSET_HAUTEUR_PM_BM])*1.0 + ((prevCoeff===undefined)?hauteurVal:prevCoeff[OFFSET_HAUTEUR_PM_BM])*1.0)*1.0/2;
-			  console.log(h,hauteurVal,  (prevCoeff===undefined)?hauteurVal:prevCoeff[OFFSET_HAUTEUR_PM_BM], coeff[OFFSET_HAUTEUR_PM_BM], (nextCoeff===undefined)?hauteurVal:nextCoeff[OFFSET_HAUTEUR_PM_BM]);
+			  const hPrev = ((prevCoeff===undefined) ? hauteurVal : (prevCoeff[OFFSET_HAUTEUR_PM_BM]) + OFFSET_Y) * 1.0;
+			  const hNext = ((nextCoeff===undefined) ? hauteurVal : (nextCoeff[OFFSET_HAUTEUR_PM_BM]) + OFFSET_Y) * 1.0;
+			  const h = hauteurVal;
+			  if(hPrev > hauteurVal && hauteurVal < hNext){
+				  h = ((hPrev + hNext) / 2.0);
+			  }
+			  console.log(prevCoeff, nextCoeff);
+			  console.log(h ,hauteurVal,  hPrev, coeff[OFFSET_HAUTEUR_PM_BM], hNext);
               console.log('local max', currentDate, heurePMDate, coeff[OFFSET_COEFF], xIndex);
               month.options.series[COEFF_SERIE].data.push(-1);
               month.options.series[COEFF_SERIE].markPoint.data.push({
@@ -285,7 +291,7 @@ const nextIndex = (currentIndex + 1) % coefficients.length;
                 name: 'Coefficient',
                 value: heurePM,
                 xAxis: xIndex,
-                yAxis: hauteurVal + 0.8
+                yAxis: h + 0.8
               });
               showCoeff = false;
               forceShowCoeff = false;
