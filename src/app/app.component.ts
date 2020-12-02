@@ -271,10 +271,11 @@ export class AppComponent implements OnInit {
 			  const currentIndex = coefficients.indexOf(coeff);
 const nextIndex = (currentIndex + 1) % coefficients.length;
 			  const nextCoeff = coefficients[nextIndex];
-			  const hPrev = ((prevCoeff===undefined) ? hauteurVal : (prevCoeff[OFFSET_HAUTEUR_PM_BM]) + OFFSET_Y) * 1.0;
-			  const hNext = ((nextCoeff===undefined) ? hauteurVal : (nextCoeff[OFFSET_HAUTEUR_PM_BM]) + OFFSET_Y) * 1.0;
-			  const h = hauteurVal;
-			  if(hPrev > hauteurVal && hauteurVal < hNext){
+			  const hPrev = (((prevCoeff===undefined) ? hauteurVal : (prevCoeff[OFFSET_HAUTEUR_PM_BM]) * 1.0 + OFFSET_Y)).toFixed(2) * 1.0;
+			  const hNext = (((nextCoeff===undefined) ? hauteurVal : (nextCoeff[OFFSET_HAUTEUR_PM_BM]) * 1.0 + OFFSET_Y)).toFixed(2) * 1.0;
+			  let h = hauteurVal;
+			  if(hPrev >= hauteurVal && hauteurVal <= hNext){
+				  console.log("lissage");
 				  h = ((hPrev + hNext) / 2.0);
 			  }
 			  console.log(prevCoeff, nextCoeff);
