@@ -1,20 +1,22 @@
-<div style="width: 2480px;height: 3508px;border: 0px solid; display: block; margin: 11px 12px 11px 12px">
-  <h1 style="text-align: center; font-size: 60px; font-weight: bold;color: #ff7b5c; margin-top: 30px; text-transform: uppercase"><span class="surf-font">J</span> Calendrier des marées	2021	<span class="surf-font">k</span> Lacanau <span class="surf-font reverse">J</span></h1>
-  <div *ngFor="let month of months" style="border: 0px solid;">
+<!--<div style="width: 2480px;height: 3508px;border: 0px solid; display: block; margin: 11px 12px 11px 12px">-->
+<div style="width: 4867px;height: 6922px;border: 0px solid; display: block; margin: 47px 47px 47px 47px">
+  <h1 style="text-align: center; font-size: 120px; font-weight: bold;color: #ff7b5c; margin-top: 60px; margin-bottom: 60px; text-transform: uppercase"><span class="surf-font">J</span> Calendrier des marées	2021	<span class="surf-font">k</span> Lacanau <span class="surf-font reverse">J</span></h1>
+  <div *ngFor="let month of months" style="border: 0px solid;margin-bottom: 40px;">
     <span
       style="writing-mode: vertical-rl;
       text-orientation: upright;
       float: left;
-      margin-left: 15px;;
-      font-size: 24px;
+      margin: 0;;
+      font-size: 48px;
       font-weight: bold;
       vertical-align: center;
       color: #ff7b5c;
-      height:286px;
+      height:526px;
+	  width: 48px;
       text-align: center;
 text-transform: uppercase;">{{month.month}}
     </span>
     <div echarts [options]="month.options" theme="macarons" class="chart"
-         style="width: 2480px;height: 286px; display: block; margin: 0"></div>
+         style="width: 4819px;height: 526px; display: block; margin: 0; margin-left: 48px; "></div>
   </div>
 </div>

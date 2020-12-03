@@ -53,8 +53,11 @@ export class AppComponent implements OnInit {
       type: 'category',
       data: [],
       show: true,
-      axisLabel: {show: true, interval: 288, rotate: 0, padding: [0, 0, 0, 50]},
-      axisLine: {lineStyle: {color: '#ff7b5c'}}
+      axisLabel: {show: true, interval: 288, rotate: 0, padding: [-15, -155, 0, 0], 'font-family': 'Roboto Mono',
+			fontSize: 35,
+			fontWeight: 'normal'},
+      axisLine: {lineStyle: {color: '#ff7b5c', width: 3}},
+	  axisTick: {lineStyle: {color: '#ff7b5c', width: 3}, length:15},
     },
     yAxis: {
       type: 'value',
@@ -81,6 +84,9 @@ export class AppComponent implements OnInit {
           symbol: 'arrow',
           data: []
         },
+		lineStyle: {
+			width: 5
+		}
       },
       {
         data: [],
@@ -94,11 +100,13 @@ export class AppComponent implements OnInit {
         },
         markPoint: {
           symbol: 'roundRect',
-          symbolSize: 25,
+          symbolSize: 60,
           itemStyle: {color: '#7997ff'},
           label: {
             color: '#fff',
-            'font-family': 'Roboto Mono'
+            'font-family': 'Roboto Mono',
+			fontSize: 35,
+			fontWeight: 'normal'
           },
           data: []
         }
@@ -119,7 +127,9 @@ export class AppComponent implements OnInit {
           label: {
             color: '#7997ff',
             opacity: 1,
-            'font-family': 'Roboto Mono'
+            'font-family': 'Roboto Mono',
+			fontSize: 26,
+			fontWeight: 'bold'
           },
           data: []
         }
@@ -267,7 +277,7 @@ export class AppComponent implements OnInit {
             if (heure === this.NB_VALUES - 1 && heuresBm.length > 0) {
               forceShowHeureBm = true;
             }
-            // Coefficients de marée
+            // Coefficients de marée 
             if ((currentDate > heurePMDate && showCoeff) || forceShowCoeff) {
               const heurePM = heuresPm.shift();
               const coeff = coefficients.shift();
