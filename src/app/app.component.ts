@@ -54,16 +54,16 @@ export class AppComponent implements OnInit {
       data: [],
       show: true,
       axisLabel: {show: true, interval: 288, rotate: 0, padding: [0, 0, 0, 50]},
-      axisLine: {lineStyle: {color:'#ff7b5c'}}
+      axisLine: {lineStyle: {color: '#ff7b5c'}}
     },
     yAxis: {
       type: 'value',
-      max: 8,
+      max: 7.9,
       min: -0.7,
-      show: true,
+      show: false,
       position: 'right',
-	  axisLabel: {show: true,},
-      axisLine: {lineStyle: {color:'#ff7b5c'}}
+      axisLabel: {show: false},
+      axisLine: {lineStyle: {color: '#ff7b5c'}}
     },
     series: [
       {
@@ -216,7 +216,7 @@ export class AppComponent implements OnInit {
     const OFFSET_COEFF = 3;
     const OFFSET_HAUTEUR_PM_BM = 2;
     const OFFSET_HEURE_PM_BM = 1;
-    let m = 0; 
+    let m = 0;
     const NB_COEFF = 4;
     const HAUTEUR_SERIE = 0;
     const COEFF_SERIE = 1;
@@ -226,9 +226,10 @@ export class AppComponent implements OnInit {
         console.log('Month', month, m);
         let showCoeff = true;
         let forceShowCoeff = false;
-		let prevCoeff = undefined;
+        let forceShowHeureBm = false;
+        let prevCoeff = undefined;
+        let hauteurPrev;
         for (let d = 0; d < month.days; d++) {
-          console.log('Day', d);
           const date = '2021-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + (d + 1)).slice(-2);
           console.log('Date', date);
           const coefficients: number[] = [];
@@ -245,9 +246,8 @@ export class AppComponent implements OnInit {
               heuresBm.push(coeffInfos[OFFSET_HEURE_PM_BM]);
             }
           }
-          console.log(coefficients);
           for (let heure = 0; heure < this.NB_VALUES; heure++) {
-            if ( month.monthDatas[d][date][heure] === undefined) {
+            if (month.monthDatas[d][date][heure] === undefined) {
               continue;
             }
             const hauteurInfoHeure = month.monthDatas[d][date][heure];
@@ -256,6 +256,7 @@ export class AppComponent implements OnInit {
             const currentDate = Date.parse(date.concat(' ').concat(heureVal).concat(':00 GMT'));
             const heurePMDate = Date.parse(date.concat(' ').concat(heuresPm.values().next().value).concat(':00 GMT'));
             const heureBMDate = Date.parse(date.concat(' ').concat(heuresBm.values().next().value).concat(':00 GMT'));
+            //console.log(date.concat(' ').concat(heureVal).concat(':00 GMT'), date.concat(' ').concat(heuresBm.values().next().value).concat(':00 GMT'));
             // Axe X
             const xIndex = heure + d * this.NB_VALUES;
             xAxisLAbel[xIndex] = date;
@@ -263,40 +264,42 @@ export class AppComponent implements OnInit {
             if (heure === this.NB_VALUES - 1 && heuresPm.length > 0) {
               forceShowCoeff = true;
             }
+            if (heure === this.NB_VALUES - 1 && heuresBm.length > 0) {
+              forceShowHeureBm = true;
+            }
             // Coefficients de marée
             if ((currentDate > heurePMDate && showCoeff) || forceShowCoeff) {
               const heurePM = heuresPm.shift();
               const coeff = coefficients.shift();
-			  // TODO calculer la hauteur avec les hauteur PM/BM pas avec les coeff
-			  const currentIndex = coefficients.indexOf(coeff);
-const nextIndex = (currentIndex + 1) % coefficients.length;
-			  const nextCoeff = coefficients[nextIndex];
-			  const hPrev = (((prevCoeff===undefined) ? hauteurVal : (prevCoeff[OFFSET_HAUTEUR_PM_BM]) * 1.0 + OFFSET_Y)).toFixed(2) * 1.0;
-			  const hNext = (((nextCoeff===undefined) ? hauteurVal : (nextCoeff[OFFSET_HAUTEUR_PM_BM]) * 1.0 + OFFSET_Y)).toFixed(2) * 1.0;
-			  let h = hauteurVal;
-			  if(hPrev >= hauteurVal && hauteurVal <= hNext){
-				  console.log("lissage");
-				  h = ((hPrev + hNext) / 2.0);
-			  }
-			  console.log(prevCoeff, nextCoeff);
-			  console.log(h ,hauteurVal,  hPrev, coeff[OFFSET_HAUTEUR_PM_BM], hNext);
-              console.log('local max', currentDate, heurePMDate, coeff[OFFSET_COEFF], xIndex);
+              // TODO calculer la hauteur avec les hauteur PM/BM pas avec les coeff
+              const currentIndex = coefficients.indexOf(coeff);
+              const nextIndex = (currentIndex + 1);
+              const nextCoeff = coefficients[nextIndex];
+              const hCurr: number = coeff[OFFSET_HAUTEUR_PM_BM] * 1.0 + OFFSET_Y;
+              const hPrev: number = (prevCoeff === undefined) ? hCurr : (prevCoeff) * 1.0 + OFFSET_Y;
+              const hNext: number = (nextCoeff === undefined) ? hCurr : (nextCoeff[OFFSET_HAUTEUR_PM_BM]) * 1.0 + OFFSET_Y;
+              let h = hauteurVal;
+              //console.log(heure);
+              //console.log('lissage', hPrev, hNext, (hPrev + hNext) / 2.0);
+              h = ((hPrev + hNext) / 2.0);
+              //console.log('hauteurs ', h,  hauteurVal, hPrev, hCurr, hNext);
+              //console.log('coeff', coeff[OFFSET_COEFF]);
               month.options.series[COEFF_SERIE].data.push(-1);
               month.options.series[COEFF_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: coeff[OFFSET_COEFF].toString(),
                 xAxis: xIndex,
-                yAxis: h + 1.7
+                yAxis: h + 1.9
               });
               month.options.series[HEURE_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: heurePM,
                 xAxis: xIndex,
-                yAxis: h + 0.8
+                yAxis: h + 1.0
               });
               showCoeff = false;
               forceShowCoeff = false;
-			  prevCoeff = coeff;
+              prevCoeff = hPrev - OFFSET_Y;
             } else {
 
               if (!(currentDate > heurePMDate)) {
@@ -305,29 +308,32 @@ const nextIndex = (currentIndex + 1) % coefficients.length;
               month.options.series[COEFF_SERIE].data.push(-1);
 
             }
-            if (currentDate > heureBMDate) {
+            if (currentDate > heureBMDate || forceShowHeureBm) {
+              //console.log("heurBM")
               const heureBM = heuresBm.shift();
+              let hauteurNext = (month.monthDatas[d][date][heure] === undefined) ? hauteurVal : (month.monthDatas[d][date][heure][OFFSET_HAUTEUR]) * 1.0 + OFFSET_Y;
+              hauteurPrev = (hauteurPrev === undefined) ? hauteurVal : hauteurPrev;
+              let hauteur = (hauteurPrev + hauteurNext) / 2.0;
               month.options.series[HEURE_SERIE].data.push(-1);
               month.options.series[HEURE_SERIE].markPoint.data.push({
                 name: 'Coefficient',
                 value: heureBM.toString(),
                 xAxis: xIndex,
-                yAxis: hauteurVal - 0.8
+                yAxis: hauteur - 0.8
               });
-              // on ignore les coeff en basse mer
-              // coefficients.pop();
-              // récupération de l'heure
+              hauteurPrev = hauteur;
+              forceShowHeureBm = false;
             }
 
             // Hauteur de marée
             month.options.series[HAUTEUR_SERIE].data.push(hauteurVal);
           }
         }
-        month.options.xAxis.axisLabel.formatter = function (value, index) {
+        month.options.xAxis.axisLabel.formatter = function(value, index) {
           return xAxisLAbel[index].substr(xAxisLAbel[index].length - 2);
         };
         for (let i = 0; i < 15; i++) {
-          console.log('ad')
+          console.log('ad');
           month.options.series[HAUTEUR_SERIE].data.push(null);
           month.options.xAxis.data.push(month.options.xAxis.data.length + 1);
         }

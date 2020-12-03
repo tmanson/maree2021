@@ -10,7 +10,7 @@
 // Fonts
 @import 'https://fonts.googleapis.com/css?family=Material+Icons+Sharp';
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500');
-     
+
 $fontConfig: (
   display-4: mat-typography-level(112px, 112px, 300, 'Roboto Mono', -0.0134em),
   display-3: mat-typography-level(56px, 56px, 400, 'Roboto Mono', -0.0089em),
@@ -239,8 +239,20 @@ $altTheme: mat-dark-theme($theme-primary, $theme-accent, $theme-warn);
 
 .material-icons {
   font-size: 24px;
-  font-family: 'Material Icons Sharp', 'Material Icons';  
+  font-family: 'Material Icons Sharp', 'Material Icons';
   .mat-badge-content {
     font-family: 'Roboto Mono';
   }
+}
+@font-face {
+  font-family: "Surf";
+  src: url("assets/Surf.otf") format("truetype");
+}
+.surf-font {
+  font-family: 'Surf', 'Roboto Mono';
+  font-size: 85px
+}
+.surf-font.reverse{
+  display: inline-block;
+  transform: scale(-1, 1);
 }

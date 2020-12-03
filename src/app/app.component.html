@@ -1,5 +1,5 @@
 <div style="width: 2480px;height: 3508px;border: 0px solid; display: block; margin: 11px 12px 11px 12px">
-  <h1 style="text-align: center; font-size: 60px; font-weight: bold;color: #ff7b5c; margin-top: 30px; text-transform: uppercase">&mdash; Calendrier des marées	2021	&mdash; Lacanau 	&mdash;</h1>
+  <h1 style="text-align: center; font-size: 60px; font-weight: bold;color: #ff7b5c; margin-top: 30px; text-transform: uppercase"><span class="surf-font">J</span> Calendrier des marées	2021	<span class="surf-font">k</span> Lacanau <span class="surf-font reverse">J</span></h1>
   <div *ngFor="let month of months" style="border: 0px solid;">
     <span
       style="writing-mode: vertical-rl;
@@ -12,8 +12,7 @@
       color: #ff7b5c;
       height:286px;
       text-align: center;
-text-transform: uppercase;">
-      {{month.month}}
+text-transform: uppercase;">{{month.month}}
     </span>
     <div echarts [options]="month.options" theme="macarons" class="chart"
          style="width: 2480px;height: 286px; display: block; margin: 0"></div>
